@@ -1,4 +1,4 @@
-import { Encodable } from ".";
+import { Encodable } from "./index";
 
 export type AddressOptions =
   | {

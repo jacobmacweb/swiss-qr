@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import * as jsdom from "jsdom";
-import fs from "fs/promises";
+import { promises as fs } from "fs";
 import { PAYMENT_AREA_HEIGHT_MM } from "./constants";
 
 export const A4 = [210, 297] as const;

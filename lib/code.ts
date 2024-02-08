@@ -3,7 +3,7 @@ import { ALLOWED_CURRENCIES } from "./constants";
 import { LABELS } from "./labels";
 import { validate } from "node-iso11649";
 import { isValid as isValidEsr } from "./esr";
-import { Encodable } from ".";
+import { Encodable } from "./index";
 
 interface QRCodeOptions {
   amount: string | number;
