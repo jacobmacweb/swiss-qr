@@ -4,6 +4,8 @@ import { LABELS } from "./labels";
 import { validate } from "node-iso11649";
 import { isValid as isValidEsr } from "./esr";
 import { Encodable } from "./index";
+import QRCodeSvg from "qrcode-svg";
+import d3 from "d3";
 
 interface QRCodeOptions {
   amount: string | number;
@@ -118,7 +120,7 @@ export class QRCode implements Encodable {
       QR_CODING,
       this.creditor.iban,
       this.creditor.address.encode(),
-      ...new Address().encode(), // Final Creditor, this is future proofing.
+      new Address().encode(), // Final Creditor, this is future proofing.
       this.amount ?? "",
       this.currency ?? "",
       this.debtor?.address?.encode() ?? new Address().encode(),
@@ -127,6 +129,16 @@ export class QRCode implements Encodable {
       "EPD",
       ...(this.alternativeProcedure ?? []),
     ].join("\r\n");
+  }
+
+  public svg() {
+    const svg = new QRCodeSvg({
+      content: this.encode(),
+      padding: 0,
+      ecl: "M",
+    }).svg();
+
+    return svg;
   }
 }
 
