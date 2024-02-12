@@ -1,11 +1,9 @@
 import { Address, AddressOptions } from "./address";
 import { ALLOWED_CURRENCIES } from "./constants";
-import { LABELS } from "./labels";
 import { validate } from "node-iso11649";
 import { isValid as isValidEsr } from "./esr";
 import { Encodable } from "./index";
 import QRCodeSvg from "qrcode-svg";
-import d3 from "d3";
 
 interface QRCodeOptions {
   amount: string | number;
@@ -125,6 +123,7 @@ export class QRCode implements Encodable {
       this.currency ?? "",
       this.debtor?.address?.encode() ?? new Address().encode(),
       this.referenceType ?? "",
+      this.referenceNumber ?? "",
       this.debtor?.additionalInformation?.replace(/\r?\n/g, " ") ?? "",
       "EPD",
       ...(this.alternativeProcedure ?? []),
@@ -143,6 +142,10 @@ export class QRCode implements Encodable {
 }
 
 export const validateAndFormatNumber = (input: number | string): string => {
+  if (input === undefined || input === null) {
+    throw new Error("Number is required.");
+  }
+
   // Convert input to string if it's a number
   const inputStr = input.toString();
 
