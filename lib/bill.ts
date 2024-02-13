@@ -6,18 +6,18 @@ import { PAYMENT_AREA_HEIGHT_MM } from "./constants";
 export const A4 = [210, 297] as const;
 export const PAYMENT_AREA = [A4[0], PAYMENT_AREA_HEIGHT_MM] as const;
 
-export interface DocumentOptions {
+export interface BillOptions {
   pageSize: readonly [number, number];
 }
 
-const defaultOptions: DocumentOptions = {
+const defaultOptions: BillOptions = {
   pageSize: A4,
 };
 
-export class Document {
+export class Bill {
   private body: d3.Selection<HTMLBodyElement, unknown, null, undefined>;
   private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
-  constructor(options: DocumentOptions = defaultOptions) {
+  constructor(options: BillOptions = defaultOptions) {
     const dom = new jsdom.JSDOM();
     this.body = d3.select(dom.window.document).select("body");
 

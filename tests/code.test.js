@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { QRCode, validateAndFormatNumber } from "../lib/code";
 import { Address } from "../lib/address";
+import fs from "fs/promises";
 
 describe("qr code module - number validation", () => {
   test("allows valid numbers", () => {
@@ -63,6 +64,8 @@ describe("qr code - payment code", () => {
   };
   test("encodes correct data", () => {
     const code = new QRCode(defaultOptions);
+
+    fs.writeFile("qr-code.svg", code.svg(), "utf-8");
 
     expect(code.encode()).toBe(
       "SPC\r\n0200\r\n1\r\nCH6089144687583746992\r\nS\r\nDaniel Müller\r\nChemin des Fins\r\n6\r\n1218\r\nGenève\r\nCH\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n100.00\r\nCHF\r\nS\r\nLilly Haas\r\nRoute de l'Allondon\r\n30\r\n1242\r\nGenève\r\nCH\r\nNON\r\n\r\nTest message\r\nEPD",

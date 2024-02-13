@@ -4,6 +4,8 @@ import { validate } from "node-iso11649";
 import { isValid as isValidEsr } from "./esr";
 import { Encodable } from "./index";
 import QRCodeSvg from "qrcode-svg";
+import * as d3 from "d3";
+import * as jsdom from "jsdom";
 
 interface QRCodeOptions {
   amount: string | number;
@@ -130,12 +132,98 @@ export class QRCode implements Encodable {
     ].join("\r\n");
   }
 
-  public svg() {
-    const svg = new QRCodeSvg({
+  public svgContent() {
+    return new QRCodeSvg({
       content: this.encode(),
       padding: 0,
       ecl: "M",
     }).svg();
+  }
+
+  public insertSvgContent(
+    svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
+  ) {
+    const dom = new jsdom.JSDOM();
+
+    const qrSvg = d3
+      .select(dom.window.document)
+      .select("body")
+      .html(this.svgContent());
+
+    svg.insert("g").attr("id", "qr").html(qrSvg.select("svg").html());
+  }
+
+  public insertSwissCross(
+    svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
+  ) {
+    const center = 128;
+    const scale = 4.25;
+    const centerOffset = (8.5 * scale) / 2;
+    const group = svg
+      .append("g")
+      .attr(
+        "transform",
+        `translate(${center - centerOffset}, ${center - centerOffset}) scale(${scale})`,
+      );
+
+    group
+      .append("rect")
+      .attr("x", -0.5)
+      .attr("y", -0.5)
+      .attr("width", 8.5)
+      .attr("height", 8.5)
+      .attr("fill", "white");
+
+    group
+      .append("rect")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", 7.5)
+      .attr("height", 7.5)
+      .attr("fill", "black");
+
+    const outside = 1.5;
+    const inside = 1.5;
+    group
+      .append("polygon")
+      .attr(
+        "points",
+        [
+          [outside, outside + inside],
+          [outside + inside, outside + inside],
+          [outside + inside, outside],
+          [outside + inside * 2, outside],
+          [outside + inside * 2, outside + inside],
+          [outside + inside * 3, outside + inside],
+          [outside + inside * 3, outside + inside * 2],
+          [outside + inside * 2, outside + inside * 2],
+          [outside + inside * 2, outside + inside * 3],
+          [outside + inside, outside + inside * 3],
+          [outside + inside, outside + inside * 2],
+          [outside, outside + inside * 2],
+        ]
+          .map((v) => v.join(","))
+          .join(" "),
+      )
+      .attr("fill", "white");
+
+    return group;
+  }
+
+  public svg() {
+    const dom = new jsdom.JSDOM();
+    // <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="256" height="256">
+    const svg = d3
+      .select(dom.window.document)
+      .select("body")
+      .append("svg")
+      .attr("xmlns", "http://www.w3.org/2000/svg")
+      .attr("version", "1.1")
+      .attr("width", "256")
+      .attr("height", "256");
+
+    this.insertSvgContent(svg);
+    this.insertSwissCross(svg);
 
     return svg;
   }
